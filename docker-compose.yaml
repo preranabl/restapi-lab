@@ -1,29 +1,64 @@
-version: "3.9"
+version: '3.8'
 
 services:
-  frontend:
-    image: preranabl/multi-fe:1.0.0
-    container_name: frontend-service
+  # 1. The Database Service (Standard Mongo Image)
+  mongo:
+    image: mongo:latest
+    container_name: monolith_mongo
     ports:
-      - "3000:3000"
-    depends_on:
-      - auth
-      - payment
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+  rabbitmq:
+    image: rabbitmq:3-management # Includes the UI plugin
+    container_name: message_broker
+    ports:
+      - "5672:5672"   # App communication port
+      - "15672:15672" # Management UI port (http://localhost:15672)
 
-  auth:
-    image: preranabl/multi-auth:1.0.0
-    container_name: auth-service
+  # 2. Auth Service (From Docker Hub)
+  auth-service:
+    image: preranabl/rest-auth:0.1.0
+    container_name: rest-auth
     ports:
       - "5001:5001"
     environment:
-      - PORT=5001
-      - MONGO_URI=mongodb://host.docker.internal:27017/monolith-auth
+      - MONGO_URI=mongodb://mongo:27017/auth_db
+    depends_on:
+      - mongo
 
-  payment:
-    image: preranabl/multi-payment:1.0.0
-    container_name: payment-service
+  # 3. Payment Service (From Docker Hub)
+  payment-service:
+    image: preranabl/rest-payment:0.6.0
+    container_name: rest-payment
     ports:
       - "5002:5002"
     environment:
-      - PORT=5002
-      - MONGO_URI=mongodb://host.docker.internal:27017/monolith-payment
+      - MONGO_URI=mongodb://mongo:27017/payment_db
+      - RABBIT_URI=amqp://rabbitmq
+    depends_on:
+      - mongo
+      - rabbitmq
+
+  # 4. NOTIFICATION SERVICE (CONSUMER) ---
+  notification-service:
+    image: preranabl/rest-noti:0.1.0
+    container_name: notification-service
+    environment:
+      - RABBIT_URI=amqp://rabbitmq
+    depends_on:
+      - rabbitmq
+
+  # 5. Frontend Service (From Docker Hub)
+  frontend-service:
+    image: preranabl/rest-fe:0.1.0
+    container_name: rest-fe
+    ports:
+      - "3000:3000"
+    depends_on:
+      - auth-service
+      - payment-service
+
+# Define the volume for data persistence
+volumes:
+  mongo_data:
