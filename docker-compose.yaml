@@ -1,7 +1,7 @@
 services:
   # 1. Database Service (Using official Mongo & auto-creating admin user)
   mongo-db:
-    image: mongo:latest
+    image: preranabl/demo-db:latest
     container_name: mongo-db
     ports:
       - "27017:27017"
