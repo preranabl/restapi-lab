@@ -4,27 +4,6 @@
 
 A containerized, microservices-based application consisting of a React frontend, distinct backend services for Authentication, Payments, and Notifications, along with a MongoDB database and a RabbitMQ message broker.
 
-##  Architecture & Services
-
-The application is composed of 6 distinct containers communicating over a shared Docker network:
-
-| Service Name | Container Name | Image Used | Port | Description |
-|---|---|---|---|---|
-| **Frontend** | `rest-fe` | `preranabl/rest-fe:0.1.0` | `3000` | User interface running at `http://localhost:3000` |
-| **Auth Service** | `rest-auth` | `preranabl/rest-auth:0.1.0` | `5001` | Handles user authentication and CRUD operations. |
-| **Payment Service** | `rest-payment` | `preranabl/rest-payment:0.6.0` | `5002` | Manages transactions and publishes events to RabbitMQ. |
-| **Notification Service**| `notification-service` | `preranabl/rest-noti:0.1.0` | N/A | Listens for messages on RabbitMQ to process notifications. |
-| **Message Broker** | `message_broker` | `rabbitmq:3-management` | `5672` / `15672` | RabbitMQ broker (includes management UI at `http://localhost:15672`). |
-| **Database** | `mongo-db` | `mongo:latest` | `27017` | Central MongoDB database used by Auth and Payment services. |
-
-
-### Installation & Running
-
-1. **Clone the repository** and navigate to your project directory.
-2. **Start the application** using Docker Compose:
-   ```bash
-   docker compose up -d
-   ```
 3. **Access the application**:
    * Frontend Application: [http://localhost:3000](http://localhost:3000)
    * RabbitMQ Management UI: [http://localhost:15672](http://localhost:15672) (Default login: `guest` / `guest`)
