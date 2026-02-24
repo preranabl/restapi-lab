@@ -1,5 +1,3 @@
-
-```markdown
 # REST Lab Microservices Application
 
 A containerized, microservices-based application consisting of a React frontend, distinct backend services for Authentication, Payments, and Notifications, along with a MongoDB database and a RabbitMQ message broker.
@@ -12,7 +10,7 @@ A containerized, microservices-based application consisting of a React frontend,
    * Admin Dashboard: [http://localhost:3000/dashboard.html](http://localhost:3000)
 ---
 
-## ⚡ API Testing with Thunder Client (VS Code)
+##  API Testing with Thunder Client (VS Code)
 
 You can easily test the REST APIs using Thunder Client in VS Code. Below are examples of **POST**, **GET**, **PUT**, and **DELETE** requests for the Auth Service. 
 
