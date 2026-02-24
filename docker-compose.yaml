@@ -21,7 +21,7 @@ services:
 
   # 3. Auth Service
   auth-service:
-    image: preranabl/rest-auth:0.1.0
+    image: preranabl/rest-auth:0.2.0
     container_name: rest-auth
     ports:
       - "5001:5001"
@@ -32,7 +32,7 @@ services:
 
   # 4. Payment Service
   payment-service:
-    image: preranabl/rest-payment:0.6.0
+    image: preranabl/rest-payment:0.7.0
     container_name: rest-payment
     ports:
       - "5002:5002"
@@ -45,7 +45,7 @@ services:
 
   # 5. Notification Service
   notification-service:
-    image: preranabl/rest-noti:0.1.0
+    image: preranabl/rest-noti:0.2.0
     container_name: notification-service
     environment:
       - RABBIT_URI=amqp://message_broker
@@ -64,4 +64,3 @@ services:
 
 volumes:
   mongo_data:
-  
