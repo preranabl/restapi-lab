@@ -16,7 +16,7 @@ app.use("/auth", authRoutes);
 
 // MongoDB connection
 mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log("✅ Auth DB connected"))
+  .then(() => console.log("Auth DB connected"))
   .catch(err => console.error("DB error:", err));
 
 app.listen(5001, () => {

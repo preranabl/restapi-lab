@@ -1,55 +1,58 @@
-version: '3.8'
-
 services:
-  # 1. The Database Service (Standard Mongo Image)
-  mongo:
+  # 1. Database Service (Using official Mongo & auto-creating admin user)
+  mongo-db:
     image: mongo:latest
-    container_name: monolith_mongo
+    container_name: mongo-db
     ports:
       - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=admin123
     volumes:
       - mongo_data:/data/db
-  rabbitmq:
-    image: rabbitmq:3-management # Includes the UI plugin
+
+  # 2. Message Broker
+  message_broker:
+    image: rabbitmq:3-management
     container_name: message_broker
     ports:
-      - "5672:5672"   # App communication port
-      - "15672:15672" # Management UI port (http://localhost:15672)
+      - "5672:5672"   
+      - "15672:15672" 
 
-  # 2. Auth Service (From Docker Hub)
+  # 3. Auth Service
   auth-service:
     image: preranabl/rest-auth:0.1.0
     container_name: rest-auth
     ports:
       - "5001:5001"
     environment:
-      - MONGO_URI=mongodb://mongo:27017/auth_db
+      - MONGO_URI=mongodb://admin:admin123@mongo-db:27017/auth_db?authSource=admin
     depends_on:
-      - mongo
+      - mongo-db
 
-  # 3. Payment Service (From Docker Hub)
+  # 4. Payment Service
   payment-service:
     image: preranabl/rest-payment:0.6.0
     container_name: rest-payment
     ports:
       - "5002:5002"
     environment:
-      - MONGO_URI=mongodb://mongo:27017/payment_db
-      - RABBIT_URI=amqp://rabbitmq
+      - MONGO_URI=mongodb://admin:admin123@mongo-db:27017/payment_db?authSource=admin
+      - RABBIT_URI=amqp://message_broker
     depends_on:
-      - mongo
-      - rabbitmq
+      - mongo-db
+      - message_broker
 
-  # 4. NOTIFICATION SERVICE (CONSUMER) ---
+  # 5. Notification Service
   notification-service:
     image: preranabl/rest-noti:0.1.0
     container_name: notification-service
     environment:
-      - RABBIT_URI=amqp://rabbitmq
+      - RABBIT_URI=amqp://message_broker
     depends_on:
-      - rabbitmq
+      - message_broker
 
-  # 5. Frontend Service (From Docker Hub)
+  # 6. Frontend Service
   frontend-service:
     image: preranabl/rest-fe:0.1.0
     container_name: rest-fe
@@ -59,6 +62,6 @@ services:
       - auth-service
       - payment-service
 
-# Define the volume for data persistence
 volumes:
   mongo_data:
+  

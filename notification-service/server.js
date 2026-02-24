@@ -10,12 +10,12 @@ async function startConsumer() {
 
     await channel.assertQueue(queue, { durable: false });
 
-    console.log("📧 Notification Service Waiting for messages...");
+    console.log(" Notification Service Waiting for messages...");
 
     channel.consume(queue, (msg) => {
       if (msg !== null) {
         const data = JSON.parse(msg.content.toString());
-        console.log(`\n📨 RECEIVED EVENT: Payment Success!`);
+        console.log(`\n RECEIVED EVENT: Payment Success!`);
         console.log(`   - Card: ${data.cardNumber}`);
         console.log(`   - Amount: $${data.amount}`);
         console.log(`   - Action: Sending Email receipt to user... [SIMULATED]`);
