@@ -61,7 +61,7 @@ You can easily test the REST APIs using Thunder Client in VS Code. Below are exa
 * **Asynchronous Messaging:** The application relies on event-driven architecture. The Payment service utilizes RabbitMQ to pass data to the Notification service asynchronously.
 * **Database Management:** Services share a single MongoDB instance (`mongo-db`) but maintain their own independent Mongoose connection pools and logical databases (`auth_db` and `payment_db`).
 
-## 🛑 Useful Docker Commands
+##  Useful Docker Commands
 
 **Stop the application gracefully:**
 ```bash
@@ -78,5 +78,5 @@ docker compose down -v
 docker logs rest-auth
 # or
 docker logs rest-payment
-```
+
 ```
