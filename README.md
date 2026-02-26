@@ -9,6 +9,31 @@ A containerized, microservices-based application consisting of a React frontend,
    * Payment Service API: `http://localhost:5002`
    * Admin Dashboard: [http://localhost:3000/dashboard.html](http://localhost:3000)
 ---
+### Here is the exact step-by-step test to do this:
+
+**1. Stop the Notification Service:**
+Run this command in your terminal:
+```bash
+docker stop notification-service
+```
+
+**2. Generate some Messages (Produce):**
+Go to Thunder Client and send a few `POST` requests to your Payment Service (`http://localhost:5002/api/payments`). Send it 3 or 4 times. 
+* *Your API will still respond with success because the payment service and RabbitMQ are still running.*
+
+**3. Watch the Queue Pile Up:**
+Open the RabbitMQ Management UI in your browser: [http://localhost:15672](http://localhost:15672)
+* Go to the **Queues** tab.
+* Look at your queue. You will now see **3 or 4 messages sitting in the "Ready" column**. They aren't resolving because the consumer is turned off!
+
+**4. Start the Service and Watch it Drain (Consume):**
+Now, turn the notification service back on to see RabbitMQ do its job:
+```bash
+docker start notification-service
+```
+If you look at the RabbitMQ UI again (or check the logs with `docker logs notification-service`), you will see it instantly process all the backlogged messages, and the queue will drop back down to **0**. 
+
+This is the exact magic of message brokers—they ensure you never lose data even if a background service crashes or goes offline for maintenance!
 
 ##  API Testing with Thunder Client (VS Code)
 
@@ -54,37 +79,6 @@ You can easily test the REST APIs using Thunder Client in VS Code. Below are exa
 * **Method:** `DELETE`
 * **URL:** `http://localhost:5001/auth/users/USER_ID_HERE`
 
-
-### Here is the exact step-by-step test to do this:
-
-**1. Stop the Notification Service:**
-Run this command in your terminal:
-```bash
-docker stop notification-service
-```
-
-**2. Generate some Messages (Produce):**
-Go to Thunder Client and send a few `POST` requests to your Payment Service (`http://localhost:5002/api/payments`). Send it 3 or 4 times. 
-* *Your API will still respond with success because the payment service and RabbitMQ are still running.*
-
-**3. Watch the Queue Pile Up:**
-Open the RabbitMQ Management UI in your browser: [http://localhost:15672](http://localhost:15672)
-* Go to the **Queues** tab.
-* Look at your queue. You will now see **3 or 4 messages sitting in the "Ready" column**. They aren't resolving because the consumer is turned off!
-
-**4. Start the Service and Watch it Drain (Consume):**
-Now, turn the notification service back on to see RabbitMQ do its job:
-```bash
-docker start notification-service
-```
-If you look at the RabbitMQ UI again (or check the logs with `docker logs notification-service`), you will see it instantly process all the backlogged messages, and the queue will drop back down to **0**. 
-
-This is the exact magic of message brokers—they ensure you never lose data even if a background service crashes or goes offline for maintenance!
-##  System Flow Highlights
-
-* **Service Resiliency:** Services are configured to automatically retry connections to RabbitMQ and MongoDB on startup.
-* **Asynchronous Messaging:** The application relies on event-driven architecture. The Payment service utilizes RabbitMQ to pass data to the Notification service asynchronously.
-* **Database Management:** Services share a single MongoDB instance (`mongo-db`) but maintain their own independent Mongoose connection pools and logical databases (`auth_db` and `payment_db`).
 
 ##  Useful Docker Commands
 

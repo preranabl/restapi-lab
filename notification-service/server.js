@@ -17,9 +17,7 @@ async function startConsumer() {
         const data = JSON.parse(msg.content.toString());
         console.log(`\n RECEIVED EVENT: Payment Success!`);
         console.log(`   - Card: ${data.cardNumber}`);
-        console.log(`   - Amount: $${data.amount}`);
-        console.log(`   - Action: Sending Email receipt to user... [SIMULATED]`);
-        
+        console.log(`   - Amount: $${data.amount}`);        
         channel.ack(msg); // Tell RabbitMQ we finished processing
       }
     });

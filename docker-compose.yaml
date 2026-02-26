@@ -45,7 +45,7 @@ services:
 
   # 5. Notification Service
   notification-service:
-    image: preranabl/rest-noti:0.2.0
+    image: preranabl/rest-noti:0.3.0
     container_name: notification-service
     environment:
       - RABBIT_URI=amqp://message_broker
@@ -54,7 +54,7 @@ services:
 
   # 6. Frontend Service
   frontend-service:
-    image: preranabl/rest-fe:0.1.0
+    image: preranabl/rest-fe:0.3.0
     container_name: rest-fe
     ports:
       - "3000:3000"
